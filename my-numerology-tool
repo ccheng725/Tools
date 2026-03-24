@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星際命運：生命靈數深度解析器</title>
+    <style>
+        :root {
+            --star-purple: #1a1a2e;
+            --deep-space: #0f0f1b;
+            --gold: #d4af37;
+            --gold-light: #f1e5ac;
+            --text: #e0e0e0;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background-color: var(--deep-space);
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            color: var(--text);
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background: linear-gradient(145deg, var(--star-purple), #16213e);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 15px rgba(212, 175, 55, 0.1);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            color: var(--gold);
+            font-weight: 300;
+            letter-spacing: 6px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--gold-light);
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            background: var(--glass);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        .main-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #8e6d22, var(--gold), #8e6d22);
+            background-size: 200% auto;
+            border: none;
+            border-radius: 12px;
+            color: #1a1a2e;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            letter-spacing: 3px;
+            transition: 0.5s;
+            margin-top: 10px;
+        }
+
+        .main-btn:hover {
+            background-position: right center;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        #resultArea {
+            margin-top: 40px;
+            display: none;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        .res-num {
+            font-size: 5rem;
+            color: var(--gold);
+            font-weight: bold;
+            margin: 15px 0;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+        }
+
+        .btn-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .sub-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .sub-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Modal 彈窗樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #1a1a2e;
+            width: 85%;
+            max-width: 550px;
+            max-height: 80vh;
+            padding: 35px;
+            border-radius: 20px;
+            border: 1px solid var(--gold);
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: var(--gold);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .section-title { color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 25px; }
+        .light { color: #b8e994; }
+        .dark { color: #fab1a0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>命運星圖</h1>
+    
+    <div class="input-group">
+        <label>靈魂暱稱</label>
+        <input type="text" id="nickname" placeholder="輸入您的稱呼">
+    </div>
+    
+    <div class="input-group">
+        <label>西元出生年月日</label>
+        <input type="date" id="birthdate">
+    </div>
+
+    <button class="main-btn" onclick="calculate()">啟動占數儀式</button>
+
+    <div id="resultArea">
+        <div id="displayNickname" style="font-size: 1.1rem; color: var(--gold-light);"></div>
+        <div class="res-num" id="mainNumber">?</div>
+        
+        <div class="btn-grid">
+            <button class="sub-btn" onclick="openModal('traits')">靈數 <span class="num-span"></span> 號人的性格特質</button>
+            <button class="sub-btn" onclick="openModal('talents')">屬於我的天賦數</button>
+            <button class="sub-btn" onclick="openModal('missing')">缺數代表意義</button>
+        </div>
+    </div>
+</div>
+
+<div id="infoModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle" style="color: var(--gold); text-align: center;"></h2>
+        <div id="modalBody" style="line-height: 1.8; text-align: justify;"></div>
+    </div>
+</div>
+
+<script>
+    const db = {
+        traits: {
+            1: {
+                full: "1號是「開創」的象徵。你具備極強的自主性與領導潛能，不喜歡隨波逐流，天生就是為了開拓新路而生。你擁有強大的意志力，能在關鍵時刻獨當一面，但也容易讓人感到難以親近。",
+                light: "具備卓越的獨立性、原創力與勇氣。能在逆境中果斷決策，是天生的領袖，對目標充滿行動力。",
+                dark: "過度自我中心、固執且難以接受他人建議。可能顯得自負、急躁，甚至具備侵略性，容易忽視團隊感受。"
+            },
+            2: {
+                full: "2號是「和諧」的代表。你天生具備極高的感受力與外交手腕，擅長在衝突中尋找平衡。你是一位優秀的協調者，能細膩地體察他人的情緒，是團隊中最溫柔的支柱。",
+                light: "溫柔、細心、極具同理心。擅長合作與外交，擁有極佳的直覺與藝術品味，是天生的和平使者。",
+                dark: "依賴性強、優柔寡斷、容易受傷且過度敏感。常為了迎合他人而失去自我，容易陷入情緒的黑洞。"
+            },
+            3: {
+                full: "3號是「表達」的噴發。你擁有無窮的想像力與創意，對美感與快樂有著天生的敏感度。你是社交場上的焦點，擅長透過言語、藝術或表演來傳達內在的能量。",
+                light: "幽默風趣、充滿赤子之心、創意無限。溝通能力極強，能帶給周遭的人快樂與希望，生活多彩多姿。",
+                dark: "缺乏耐性、容易流於表面、任性且情緒化。容易三分鐘熱度，有時會顯得浮誇，難以落實具體計畫。"
+            },
+            4: {
+                full: "4號是「穩定」的基石。你非常務實且重視安全感，對你而言，規律與結構是生活的核心。你做事條理分明、重視邏輯，是身邊朋友最信賴、最腳踏實地的後盾。",
+                light: "誠實、勤奮、具備卓越的執行力與組織力。重視家庭與責任，是值得託付重任的守護者。",
+                dark: "墨守成規、固執僵化、缺乏想像力。對未知感到焦慮，容易因為過度追求穩定而錯失改變的良機。"
+            },
+            5: {
+                full: "5號是「自由」的靈魂。你極度渴望自由，無法忍受一成不變的生活。你學習能力強、反應敏銳，喜歡探索異國文化與新奇事物，靈魂深處住著一個流浪者。",
+                light: "口才極佳、適應力強、多才多藝且充滿魅力。勇於嘗試新鮮事物，思考靈活，能快速掌握時代趨勢。",
+                dark: "衝動不安、缺乏自制力、逃避責任。容易分心，難以深耕單一領域，有時會陷入尋求感官刺激的負面循環。"
+            },
+            6: {
+                full: "6號是「奉獻」的化身。你對家庭與社會有強烈的責任感，樂於照顧他人。你追求完美與平衡，擁有一種母性般的溫暖能量，常吸引需要幫助的人來到你身邊。",
+                light: "充滿愛心、負責任、重視正義感。擅長療癒他人，具備高度的審美觀與和諧的人際關係。",
+                dark: "控制慾強、容易碎念、過度犧牲自己。常將他人的責任攬在身上，容易感到心累，並產生「我是為你好」的壓力。"
+            },
+            7: {
+                full: "7號是「真理」的探求。你擁有敏銳的直覺與深度的分析能力，喜歡鑽研事物的本質。你傾向於在獨處中思考哲理，是不折不扣的思想家與靈性尋求者。",
+                light: "觀察入微、博學智慧、獨立自主。具備強大的內省能力與邏輯思維，能看透事物的表象。",
+                dark: "孤僻、多疑、憤世嫉俗。容易與現實脫節，有時顯得冷漠、難以捉摸，並對人際關係保持過度的警覺。"
+            },
+            8: {
+                full: "8號是「權威」的運籌。你天生對權力與物質財富感應靈敏，具備優秀的商業頭腦與格局。你渴望成就卓越，能在大架構下進行精準布局，擁有成就大業的潛力。",
+                light: "果斷、具備商業才華、領導力強且抗壓性高。具備強大的創造力，能將夢想轉化為具體的成就與財富。",
+                dark: "功利主義過重、冷酷無情、權力慾強。容易忽略他人的情感需求，為了達成目的可能顯得過於現實。"
+            },
+            9: {
+                full: "9號是「大愛」的夢想家。你是天生的人道主義者，對世界充滿慈悲心。你擁有極高的靈性與博愛精神，希望能為人類帶來福祉，生命帶有一種超脫世俗的理想色彩。",
+                light: "慷慨、慈悲、具備寬闊的胸襟。多才多藝，能從宏觀的角度看世界，是靈魂成熟的守護者。",
+                dark: "不切實際、情感脆弱、原則模糊。容易受環境影響而變得憤世嫉俗，或因為過度理想化而導致失敗感重。"
+            }
+        },
+        talents: {
+            1: "獨立自主、開創性的勇氣與堅強的意志。",
+            2: "細膩的感受力、溝通協調與天生的外交能力。",
+            3: "卓越的口才、藝術創意與帶動氣氛的魅力。",
+            4: "務實的執行力、組織規劃與邏輯分析能力。",
+            5: "靈活的應變能力、演說天賦與勇於冒險的精神。",
+            6: "療癒力、責任感、照護他人與審美能力。",
+            7: "深刻的直覺、數據分析與追求真理的鑽研力。",
+            8: "商業洞察力、組織管理與掌握物質資源的能力。",
+            9: "博愛的精神、跨領域的想像力與服務大眾的慈悲。"
+        },
+        missing: {
+            1: "【自信與獨立】課題：容易依賴他人，需練習獨立判斷，找回自我肯定感。",
+            2: "【細節與合作】課題：容易忽略微小細節，需學習換位思考與傾聽的藝術。",
+            3: "【表達與情感】課題：不擅長表達真實情緒，需練習將創意落實於文字或溝通。",
+            4: "【組織與秩序】課題：生活較無規律，需練習建立長遠計畫與腳踏實地的耐心。",
+            5: "【變革與冒險】課題：性格可能過於保守，需學習擁抱變化，打破舒適圈。",
+            6: "【責任與愛心】課題：較難體會他人情感，需練習服務他人與承擔責任。",
+            7: "【深度與分析】課題：思考容易流於表面，需學習內省與深度的邏輯推導。",
+            8: "【物質與執行】課題：對財富與權力較無概念，需學習務實的財務管理與執行力。",
+            9: "【大愛與圓滿】課題：容易侷限於小我，需學習寬宏大量與追求心靈的圓滿。"
+        }
+    };
+
+    let resultStore = {};
+
+    function calculate() {
+        const name = document.getElementById('nickname').value || "旅行者";
+        const dateStr = document.getElementById('birthdate').value;
+        if (!dateStr) { alert("請先揭開出生日期的迷霧"); return; }
+
+        const nums = dateStr.replace(/-/g, '').split('').map(Number);
+        
+        // 主命數
+        let sum = nums.reduce((a, b) => a + b, 0);
+        let talentRaw = sum; // 天賦數來源
+        let finalNum = sum;
+        while (finalNum > 9) {
+            finalNum = finalNum.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+        }
+
+        // 天賦數 (加總過程中的數字)
+        let talents = talentRaw.toString().split('').map(Number);
+        
+        // 缺數 (1-9)
+        const presentNums = new Set([...nums, ...talents, finalNum]);
+        let missing = [1,2,3,4,5,6,7,8,9].filter(x => !presentNums.has(x));
+
+        resultStore = { name, finalNum, talents, missing };
+
+        document.getElementById('displayNickname').innerText = `屬於 ${name} 的靈魂代碼`;
+        document.getElementById('mainNumber').innerText = finalNum;
+        document.querySelectorAll('.num-span').forEach(el => el.innerText = finalNum);
+        document.getElementById('resultArea').style.display = 'block';
+    }
+
+    function openModal(type) {
+        const m = document.getElementById('infoModal');
+        const h = document.getElementById('modalTitle');
+        const b = document.getElementById('modalBody');
+
+        if (type === 'traits') {
+            const t = db.traits[resultStore.finalNum];
+            h.innerText = `${resultStore.finalNum} 號人的生命原型`;
+            b.innerHTML = `
+                <div class="section-title">性格詳解</div><p>${t.full}</p>
+                <div class="section-title light">✦ 光明面（優點）</div><p>${t.light}</p>
+                <div class="section-title dark">✦ 黑暗面（缺點）</div><p>${t.dark}</p>
+            `;
+        } else if (type === 'talents') {
+            h.innerText = "你的靈魂天賦數";
+            let html = `<p>天賦數是你達成目標的「工具箱」。你的天賦數字為 <strong>${resultStore.talents.join(' 與 ')}</strong>：</p>`;
+            resultStore.talents.forEach(num => {
+                html += `<div class="section-title">天賦 ${num}</div><p>${db.talents[num]}</p>`;
+            });
+            b.innerHTML = html;
+        } else if (type === 'missing') {
+            h.innerText = "今生的修練課題";
+            let html = "<p>缺數代表九宮格中能量較弱的部分，是此生需要刻意練習的目標：</p>";
+            if (resultStore.missing.length === 0) {
+                html += "<div class='section-title'>圓滿之格</div><p>恭喜！你的數字能量平衡，具備全方位的潛力。</p>";
+            } else {
+                resultStore.missing.forEach(num => {
+                    html += `<div class="section-title">缺少數字 ${num}</div><p>${db.missing[num]}</p>`;
+                });
+            }
+            b.innerHTML = html;
+        }
+
+        m.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('infoModal').style.display = 'none';
+    }
+
+    window.onclick = (e) => {
+        if (e.target == document.getElementById('infoModal')) closeModal();
+    }
+</script>
+
+</body>
+</html>
